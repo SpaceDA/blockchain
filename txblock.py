@@ -128,7 +128,7 @@ if __name__ == "__main__":
     start = time()
     B1.get_nonce()
     stop = time()
-    print(f"Time to mine = {stop - start}")
+    print(f"Time to mine is {stop - start}")
 
     #print and check hash w/ nonce
 
