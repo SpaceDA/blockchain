@@ -1,20 +1,12 @@
 from txblock import TxBlock
 from transactions import Tx
 from signatures import generate_keys
+from socket_utils import send_block, receive_object, new_server_connection
 import socket
 import pickle
 
-TCP_PORT = 5005
-
-def send_block(ip_addr, blk):
-    """serialize using pickle and send to server"""
-    send_bytes = pickle.dumps(blk)
-
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((ip_addr, TCP_PORT))
-
-    s.send(send_bytes)
-    s.close()
+TCP_PORT = 5050
+local_ip = '10.0.1.27'
 
 
 if __name__ == "__main__":
@@ -46,10 +38,12 @@ if __name__ == "__main__":
     B1.add_tx(tx2)
 
 
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((local_ip, TCP_PORT))
+    print("Connected to Server")
+    send_block(B1, s)
 
-    send_block('10.0.1.27', B1)
-
-    send_block('10.0.1.27', tx2)
+    send_block(tx2, s)
 
 
 

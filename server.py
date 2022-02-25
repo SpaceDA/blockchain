@@ -1,30 +1,16 @@
 from txblock import TxBlock
 import socket
 import pickle
+from socket_utils import send_block, receive_object, new_server_connection
 
-TCP_PORT = 5005
+TCP_PORT = 5050
 BUFFER_SIZE = 1024
+local_ip = '10.0.1.27'
 
-def new_connection(ip_addr):
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind((ip_addr, TCP_PORT))
-    s.listen()
-    return s
-
-def receive_object(s):
-    data = b""
-    new_sock, addr = s.accept()
-    while True:
-        d = new_sock.recv(BUFFER_SIZE)
-        if not d:
-            break
-        data += d
-    return pickle.loads(data)
-
-    return pickle.loads(d)
 
 if __name__ == "__main__":
-    s = new_connection('10.0.1.27')
+    s = new_server_connection(local_ip)
+
     newB = receive_object(s)
     if newB.is_valid():
         print("SUCCESS, new TX is valid")
