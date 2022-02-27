@@ -1,7 +1,7 @@
 from txblock import TxBlock
 import socket
 import pickle
-from socket_utils import send_block, receive_object, new_server_connection
+from socket_utils import send_object, receive_object, new_server_connection
 
 TCP_PORT = 5050
 BUFFER_SIZE = 1024

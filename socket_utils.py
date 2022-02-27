@@ -18,38 +18,46 @@ def new_server_connection(ip_addr):
 
 def receive_object(s):
     """receive and de-serialize incoming data in chunks of BUFFER_SIZE"""
+
     inputs = [s]
     outputs = [s]
+    while inputs:
+        print("Inputs")
+        readable, writable, exceptional = select.select(
+            inputs, [], [], 0.5
+        )
+        for s in readable:
+            data = b""
+             # accept connections from external
+            new_sock, addr = s.accept()
+            while True:
+                d = new_sock.recv(BUFFER_SIZE)
+                if not d:
+                    break
+                data += d
 
-    readable, writable, exceptional = select.select(
-        inputs, outputs, inputs, 10
-    )
-    for s in readable:
-        data = b""
-         # accept connections from external
-        new_sock, addr = s.accept()
-        while True:
-            d = new_sock.recv(BUFFER_SIZE)
-            if not d:
-                break
-            data += d
 
-
-        return pickle.loads(data)
+            return pickle.loads(data)
 
     return None
 
-def send_block(blk, socket):
+def send_object(object_list, ip_address):
     """serialize using pickle and send to server"""
-    send_bytes = pickle.dumps(blk)
-    socket.send(send_bytes)
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((ip_address, TCP_PORT))
+    send_bytes = pickle.dumps(object_list)
+    s.send(send_bytes)
+    s.close()
+    return None
 
 
 if __name__ == "__main__":
     """test non-blocking server"""
     server = new_server_connection('localhost')
+
     test_obj = receive_object(server)
+    print("new object", test_obj,"end object")
     print("SUCCESS, server is non-blocking")
-    print(test_obj)
+
     server.close()
 

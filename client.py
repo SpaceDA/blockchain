@@ -1,7 +1,7 @@
 from txblock import TxBlock
 from transactions import Tx
 from signatures import generate_keys
-from socket_utils import send_block, receive_object, new_server_connection
+from socket_utils import send_object, receive_object, new_server_connection
 import socket
 import pickle
 
@@ -37,13 +37,7 @@ if __name__ == "__main__":
     B1.add_tx(tx1)
     B1.add_tx(tx2)
 
-
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((local_ip, TCP_PORT))
-    print("Connected to Server")
-    send_block(B1, s)
-
-    send_block(tx2, s)
+    send_object([B1, tx2], 'localhost')
 
 
 
