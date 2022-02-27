@@ -7,10 +7,10 @@ BUFFER_SIZE = 1024
 local_ip = '10.0.1.27'
 
 
-def new_server_connection(ip_addr):
+def new_server_connection(ip_addr, port):
     """open connection"""
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind((ip_addr, TCP_PORT))
+    s.bind((ip_addr, port))
     s.listen()
     print("server: waiting from data")
     return s
@@ -41,10 +41,10 @@ def receive_object(s):
 
     return None
 
-def send_object(object_list, ip_address):
+def send_object(object_list, ip_address, port):
     """serialize using pickle and send to server"""
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((ip_address, TCP_PORT))
+    s.connect((ip_address, port))
     send_bytes = pickle.dumps(object_list)
     s.send(send_bytes)
     s.close()

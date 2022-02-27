@@ -3,6 +3,10 @@ from transactions import Tx
 from socket_utils import send_object, new_server_connection, receive_object
 from txblock import TxBlock
 
+OUT_PORT = 6000
+IN_PORT = 6050
+
+
 pr1, pu1 = generate_keys()
 pr2, pu2 = generate_keys()
 pr3, pu3 = generate_keys()
@@ -21,15 +25,17 @@ tx2.add_output(pu3, 4.0)
 tx2.sign(pr1)
 tx2.sign(pr2)
 
+try:
+    send_object([tx1,tx2], 'localhost', OUT_PORT)
 
-send_object(tx1, 'localhost')
-send_object(tx2, 'localhost')
+except Exception as e:
+    print(e)
 
-server = new_server_connection('localhost')
+server = new_server_connection('localhost', IN_PORT)
 
 
 for i in range(10):
-    new_block = receive_object(server)
+    new_block = receive_object(server)[0]
     if new_block:
         break
 server.close()
@@ -48,6 +54,7 @@ for tx in new_block.data:
 
     if tx == tx2:
         print("tx2 is present")
+    print(tx)
 
 
 

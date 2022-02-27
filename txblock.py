@@ -59,7 +59,7 @@ class TxBlock(CBlock):
         return int(current_hash[leading_zeroes]) < next_char_limit
 
     def get_nonce(self):
-        """Generates random nonce to check feed check_nonce """
+        """Generates random nonce to check against check_nonce """
         for i in range(1000000):
             self.nonce = "".join([
                 chr(randint(0, 255)) for i in range(10*leading_zeroes)
