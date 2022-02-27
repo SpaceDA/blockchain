@@ -12,7 +12,7 @@ def new_server_connection(ip_addr, port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind((ip_addr, port))
     s.listen()
-    print("server: waiting from data")
+    print("server: waiting for data")
     return s
 
 
@@ -35,10 +35,11 @@ def receive_object(s):
                     break
                 data += d
 
-
+            print("Data Received")
             return pickle.loads(data)
 
     return None
+
 
 def send_object(object_list, ip_address, port):
     """serialize using pickle and send to server"""
@@ -46,6 +47,7 @@ def send_object(object_list, ip_address, port):
     s.connect((ip_address, port))
     send_bytes = pickle.dumps(object_list)
     s.send(send_bytes)
+    print("Object list sent to server")
     s.close()
     return None
 

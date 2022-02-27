@@ -3,9 +3,10 @@ from transactions import Tx
 from socket_utils import send_object, new_server_connection, receive_object
 from txblock import TxBlock
 
-OUT_PORT = 6000
-IN_PORT = 6050
+IN_PORT = 7000
+OUT_PORT = 7050
 
+head_blocks = []
 
 pr1, pu1 = generate_keys()
 pr2, pu2 = generate_keys()
@@ -47,6 +48,14 @@ else:
 
 if new_block.get_nonce:
     print("Success, nonce is good")
+
+for b in head_blocks:
+    if b.compute_hash == new_block.previousHash:
+        new_block.previousBlock = b
+        head_blocks.remove(b)
+        head_blocks.append(new_block)
+
+
 
 for tx in new_block.data:
     if tx == tx1:
