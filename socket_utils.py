@@ -22,7 +22,6 @@ def receive_object(s):
     inputs = [s]
     outputs = [s]
     while inputs:
-        print("Inputs")
         readable, writable, exceptional = select.select(
             inputs, [], [], 0.5
         )
