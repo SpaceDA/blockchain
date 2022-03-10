@@ -68,6 +68,17 @@ class TxBlock(CBlock):
                 return self.nonce
         return None
 
+    def extract_rewards(self, miner_address, block_reward):
+            """extract block rewards + mining fees"""
+            total_in, total_out = self.count_totals()
+            fee_tx = Tx()
+            fee_tx.add_output(miner_address, block_reward + total_in - total_out)
+
+            # add mining rewards + fees to block
+            self.add_tx(fee_tx)
+
+            return self
+
 
 def enumerate_blockchain(block: TxBlock):
     while block:

@@ -13,7 +13,6 @@ class Connection(ABC):
     def connect(self, ip_addr, port):
         pass
 
-
 class GetObject(Connection):
 
     def connect(self, ip_addr, port):

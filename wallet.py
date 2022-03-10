@@ -1,92 +1,43 @@
 from signatures import generate_keys
 from transactions import Tx
-from socket_utils import send_object, new_server_connection, receive_object
+from socket_utils import SendObject, GetObject
 from txblock import TxBlock, longest_blockchain, enumerate_blockchain
-import threading
 import time
-from miner import miner_server, nonce_finder, break_now
 
 WALLET_PORT = 5006
 MINER_PORT = 5005
 WALLET_LIST = ['localhost']
-break_now = False
+
 head_blocks = []
 
 
-class Server:
+class Wallet:
+
     def __init__(self):
-        self.open = False
+        self.head_blocks = []
 
-    def listen(self, ip, port):
-        """Create server connection, receive objects"""
-        try:
-            server = new_server_connection(ip, port)
-            print("WALLET SERVER CONNECTED")
-            self.open = True
-        except Exception as e:
-            print(f"ERROR CONNECTING WALLET SERVER: {e}")
-        while self.open:
-            # receive TX list
-            object_list = receive_object(server)
+    def check_blocks(self, new_block):
+        """check blocks for placement in head blocks by comparing previousHash and hash of current blocks"""
+        print("check blocks executing")
+        if not self.head_blocks and new_block.is_valid():
+            new_block.previousBlock = None
+            self.head_blocks.append(new_block)
 
+        elif not new_block.is_valid():
+            print("ERROR, new_block is not valid")
 
-class MessageHandler:
-
-    def message_in(self, object_list: list):
-        pass
-
-    def message_out(self, ):
-
-
-
-MessageHandler.message_in(Server.listen)
-
-
-
-def wallet_server(wallet_ip, port):
-    """open a socket, receive incoming blocks, pass to check_blocks for placement on head_blocks"""
-    global head_blocks
-    global break_now
-
-    head_blocks = []
-
-    # open server connection
-    try:
-        server = new_server_connection(wallet_ip, port)
-        print("WALLET SERVER CONNECTED")
-    except Exception as e:
-        print(f"ERROR CONNECTING WALLET SERVER: {e}")
-    while not break_now:
-        # receive TX list
-        object_list = receive_object(server)
-        for i, block in enumerate(object_list):
-            if isinstance(block, TxBlock):
-                print(f"WALLET RECEIVED BLOCK {i+1}/{len(object_list)}: {block}")
-                check_blocks(block)
-
-
-def check_blocks(new_block):
-    """check blocks for placement in head blocks by comparing previousHash and hash of current blocks"""
-    print("check blocks executing")
-    if not head_blocks and new_block.is_valid():
-        new_block.previousBlock = None
-        head_blocks.append(new_block)
-
-    elif not new_block.is_valid():
-        print("ERROR, new_block is not valid")
-
-    else:
-        for b in head_blocks:
-            print("PROCESSING BLOCK...")
-            if not new_block.is_valid():
-                print("ERROR, new_block is not valid")
-            else:
-                print("NEW BLOCK IS VALID")
-                b.compute_hash == new_block.previousHash
-                new_block.previousBlock = b
-                head_blocks.remove(b)
-                head_blocks.append(new_block)
-                print(head_blocks)
+        else:
+            for b in self.head_blocks:
+                print("PROCESSING BLOCK...")
+                if not new_block.is_valid():
+                    print("ERROR, new_block is not valid")
+                else:
+                    print("NEW BLOCK IS VALID")
+                    b.compute_hash == new_block.previousHash
+                    new_block.previousBlock = b
+                    head_blocks.remove(b)
+                    head_blocks.append(new_block)
+                    print(head_blocks)
 
 
 def check_balance(public_key):
@@ -133,15 +84,6 @@ def send_coins(sender_public, sender_amt, sender_private, rec_public, rec_amt):
 
 if __name__ == "__main__":
 
-    miner_pr, miner_pu = generate_keys()
-
-    t1 = threading.Thread(target=miner_server, args=('localhost', MINER_PORT))
-    t2 = threading.Thread(target=nonce_finder, args=(WALLET_LIST, miner_pu))
-    t3 = threading.Thread(target=wallet_server, args=('localhost', WALLET_PORT))
-
-    t1.start()
-    t2.start()
-    t3.start()
 
     pr1, pu1 = generate_keys()
     pr2, pu2 = generate_keys()
@@ -188,11 +130,6 @@ if __name__ == "__main__":
     else:
         print("Success, good balance for pu3")
 
-
-
-    t1.join()
-    t2.join()
-    t3.join()
 
     print("Exit successful")
 
