@@ -1,11 +1,11 @@
 from txblock import TxBlock
 from transactions import Tx
 from signatures import generate_keys
-from socket_utils import send_object, receive_object, new_server_connection
+from socket_utils import SendObject
 import socket
 import pickle
 
-TCP_PORT = 5050
+TCP_PORT = 5005
 local_ip = '10.0.1.27'
 
 
@@ -37,7 +37,11 @@ if __name__ == "__main__":
     B1.add_tx(tx1)
     B1.add_tx(tx2)
 
-    send_object([B1, tx2], 'localhost')
+    send_server = SendObject([B1, tx2])
+    conn = send_server.connect('localhost', TCP_PORT)
+    send_server.send_object(conn)
+
+
 
 
 

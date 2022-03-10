@@ -1,5 +1,6 @@
 import signatures
 
+
 class Tx:
     inputs = None
     outputs = None

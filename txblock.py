@@ -69,6 +69,19 @@ class TxBlock(CBlock):
         return None
 
 
+def enumerate_blockchain(block: TxBlock):
+    while block:
+        yield block
+        block = block.previousBlock
+
+
+def _count_iterable(iterable):
+    return sum((1 for _ in iterable))
+
+
+def longest_blockchain(head_blocks):
+    """checks each head block to determine longest chain"""
+    return max(head_blocks, key=lambda b: _count_iterable(enumerate_blockchain(b)))
 
 
 if __name__ == "__main__":

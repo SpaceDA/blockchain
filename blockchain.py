@@ -1,5 +1,6 @@
 from cryptography.hazmat.primitives import hashes
 
+
 class SomeBlock:
     def __init__(self, mystring):
         self.string = mystring
